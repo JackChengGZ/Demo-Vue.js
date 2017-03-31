@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:v-model="http://www.w3.org/1999/xhtml" xmlns:v-demo="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+</head>
+<body>
+<div id="inputFocus">
+    <input v-focus/>
+</div>
+<div id="hook-arguments-example" v-demo:hello.a.b="message"></div>
+
+<div v-demo="{color:'red',text:'hello'}" id="example"></div>
+
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+<script src="https://unpkg.com/tween.js@16.3.4"></script>
+<script type="application/javascript">
+    /*
+    *   自定义指令
+    *       简介：除了默认设置的核心指令( v-model 和 v-show ),Vue 也允许注册自定义指令。
+    *       例如当页面加载时，元素将获得焦点。事实上，你访问后还没点击任何内容，input 就获得了焦点。现在让我们完善这个指令：
+    *       //注册一个全局的自定义指令 V-focus
+    *       Vue.directive('focus',{
+    *               inserted:function(el){
+    *                   //聚焦元素
+    *                   el.focus()
+    *               }
+    *       })
+    *       或者利用局部注册：
+    *       directive:{
+    *           focus:{
+    *               //指令的定义
+    *           }
+    *       }
+    *       <input v-focus>
+    *
+    *       钩子函数：
+    *               指令定义函数提供了几个钩子函数（可选）：
+    *                   1.bind: 只调用一次，指令第一次绑定到元素时调用，用这个钩子函数可以定义一个在绑定时执行一次的初始化动作。
+    *                   2.inserted: 被绑定元素插入父节点时调用（父节点存在即可调用，不必存在于 document 中）。
+    *                   3.update: 被绑定元素所在的模板更新时调用，而不论绑定值是否变化。通过比较更新前后的绑定值，可以忽略不必要的模板更新。
+    *                   4.componentUpdated:被绑定元素所在模板完成一次更新周期时调用.
+    *                   5.unbind:只调用一次，指令与元素接棒时调用
+    *
+    *       钩子函数参数：
+    *               1.el:指令所绑定的元素，可以用来直接操作 DOM 。
+    *               2.binding:一个对象，包含以下属性：
+    *                   name:指令名，不包括v-前缀。
+    *                   value:指令的绑定值，例如：v-my-directive="1+1",value的值2.
+    *                   oldValue:指令绑定的前一个值，仅在update和componentUpdated 钩子中可用。无论值是否改变都可用。
+    *                   expression: 绑定值的字符串形式。 例如 v-my-directive="1 + 1" ， expression 的值是 "1 + 1"。
+    *                   arg: 传给指令的参数。例如 v-my-directive:foo， arg 的值是 "foo"。
+    *                   modifiers: 一个包含修饰符的对象。 例如： v-my-directive.foo.bar, 修饰符对象 modifiers 的值是{ foo: true, bar: true }。
+    *               3.vnode:Vue编译生成的虚拟节点
+    *               4.oldValue:上一个虚拟节点，仅在update和componentUpdated 钩子中可用。
+    *               注意：除了el之外，其它参数都应该是只读的，尽量不要修改他们。如果需要在钩子之间共享数据，建议通过元素的 dataset 来进行。
+    *
+    *       函数简写：大多数情况下，我们可能想在 bind 和 update 钩子上做重复动作，并且不想关心其它的钩子函数。可以这样写:
+    *               Vue.directive('color-swatch',function(el,binding){
+    *                       el.style.backgroundColor=binding.value
+    *               })
+    *
+    *       对象字面量：如果指令需要多个值，可以传入一个 JavaScript 对象字面量。记住，指令函数能够接受所有合法类型的 JavaScript 表达式。
+    *
+    *
+    *
+    *
+    *
+    * */
+//    当页面加载时，元素将获得焦点。事实上，你访问后还没点击任何内容，input 就获得了焦点。现在让我们完善这个指令：
+    Vue.directive('focus',{
+        inserted:function(el){
+            el.focus();
+        }
+    });
+    new Vue({
+        el:'#inputFocus'
+    });
+//    一个使用了这些参数的自定义钩子样例：
+    Vue.directive('demo',{
+        bind:function(el,binding,vnode){
+            var s=JSON.stringify;
+            el.innerHTML=
+               'name:'+s(binding.name)+'<br>'+
+               'value:'+s(binding.value)+'<br>'+
+               'expression: ' + s(binding.expression) + '<br>' +
+               'argument: '   + s(binding.arg) + '<br>' +
+               'modifiers: '  + s(binding.modifiers) + '<br>' +
+               'vnode keys: ' + Object.keys(vnode).join(', ')
+        }
+    });
+    new Vue({
+        el:'#hook-arguments-example',
+        data:{
+            message:'hello'
+        }
+    });
+//    如果指令需要多个值，可以传入一个 JavaScript 对象字面量。记住，指令函数能够接受所有合法类型的 JavaScript 表达式。
+    Vue.directive('demo',function(el,binding){
+        console.log(binding.value.color);
+        console.log(binding.value.text);
+    });
+    new Vue({
+        el:"#example"
+    })
+</script>
+</html>

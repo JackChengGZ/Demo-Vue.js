@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>无标题文档</title>
+    <style>
+        #btn{position:relative;}
+        div{position:absolute;top:40px;left:10px;width:200px;height:200px;display:none;background:#000;}
+        div a{color:#FFF;}
+    </style>
+    <script>
+        window.onload=function()
+        {
+            var oBtn=document.getElementById('btn');
+            var oDiv=document.getElementById('div');
+            var oClose=document.getElementById('close');
+
+            oBtn.onmouseover=function()
+            {
+                oDiv.style.display='block';
+            };
+
+            oDiv.onclick=function(ev)
+            {
+                var oEvent=ev||event;
+                oDiv.style.display='block';
+                oEvent.cancelBubble=true;
+            };
+
+            oClose.onclick=function(ev)
+            {
+                var oEvent=ev||event;
+                oDiv.style.display='none';
+                oEvent.cancelBubble=true;
+            };
+
+//            document.onclick=function()
+//            {
+//                oDiv.style.display='none';
+//            };
+        };
+    </script>
+</head>
+
+<body>
+<input id="btn" type="button" value="划过我就弹出" />
+<div id="div">
+    <a id="close" href="javascript:">关闭</a><br /><br />
+    <input type="input" /><br />
+    <input type="button" value="提交" />
+</div>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+</head>
+<body>
+
+</body>
+<script type="application/javascript">
+    /**
+     * 服务器端渲染
+     *        1.SEO(搜索引擎优化)：谷歌和Bing可以很好地索引同步的JavaScript应用。同步在这里是个关键词。如果应用启动时有一个加载动画，
+     *                          然后内容通过ajax获取，那爬虫不会等待他们加载完成。这意味着在异步获取内容的页面上很需要进行搜索引擎
+     *                          优化的时候，服务端渲染就很重要。
+     *
+     *        2.客户端的网络比较慢：用户可能在网络比较慢的情况下从远处访问网站 - 或者通过比较差的带宽。 这些情况下，尽量减少页面请求数量，
+     *                          来保证用户尽快看到基本的内容。可以用 Webpack的代码拆分 避免强制用户下载整个单页面应用，但是，这样也
+     *                          远没有下载个单独的预先渲染过的HTML文件性能高。
+     *
+     *        3.客户端运行在老的(或者直接没有)JavaScript引擎上：对于世界上的一些地区人，可能只能用1998年产的电脑访问互联网的方式使用
+     *                          计算机。而Vue只能运行在IE9以上的浏览器，你可能也想为那些老式浏览器提供基础内容 - 或者是在命令行中使
+     *                          用 Lynx的时髦的黑客。
+     *
+     *        4.服务器渲染 对比 预渲染：如果你只是用服务端渲染来改善一个少数的营销页面（如 首页，关于，联系 等等）的SEO，那你可以用预渲
+     *                          染替换。预渲染不像服务器渲染那样即时编译HTML,预渲染只是在构建时为了特定的路由生成特定的几个静态页面。
+     *                          其优势是预渲染的设置更加简单，可以保持前端是一个完整的静态站。
+     *
+     *        5.Hello World:服务端渲染(即SSR)听起来很复杂，不过一个简单的Node脚本只需要3步就可以实现这个功能:
+     *                      //步骤1：创建一个Vue实例
+     *                      var Vue=require('vue');
+     *                      var app=new Vue({
+     *                          render:function(h){
+     *                              return h('p','hello world')
+     *                          }
+     *                      })
+     *                      //步骤2：创建一个渲染器
+     *                      var renderer=require('vue-server-render').createRenderer()
+     *                      //步骤3：将Vue实例渲染成HTML
+     *                      renderer.renderToString(app,function(error,html){
+     *                              if(error)throw error
+     *                              console.log(html)
+     *                              // => <p server-rendered="true">hello world</p>
+     *                      })
+     *
+     *        6.通过Express Web服务器实现简单的服务器端渲染：如果没有一个Web服务器，很难说是服务器端渲染，所以我们来补充它。我们将构
+     *                      建一个非常简单的服务端渲染应用，只用ES5,也不带其他构建步骤或Vue插件
+     *
+     *        7.流式响应：Vue还支持流式渲染，优先选择适用于支持流的Web服务器。允许HTML一边生成一边写入相应流，而不是在最后一次全部写入。
+     *                  其结果是请求服务速度更快，没有缺点！
+     *                  1.建立流 2.在应用响应前写入html 3.在可获得时将应用HTML写入响应 4.在响应最后写入HTML 5.处理任何错误
+     *
+     *        8.组件缓存：Vue的服务端渲染默认非常快，但是你可以通过缓存渲染好的组件进一步提高性能。这被认为是一种先进的功能，但是，
+     *                  如果缓存了错误的组件（或者正确的组件带有错误的内容）将导致应用渲染出错。特别注意：
+     *                  不应该缓存组件包含子组件依赖全局状态（例如来自vuex的状态）。如果这么做，子组件（事实上是整个子树）也会被
+     *                  缓存。所以要特别注意带有slots片段或者子组件的情况。
+     *                  1.设置：在警告情况之外的，我们可以用下面的方法缓存组件。
+     *                  2.缓存的理想条件
+     *
+     *        9.构建过程，路由和Vuex状态管理：现在，应该理解服务端渲染背后的基本概念了。但是，构建过程、路由、Vuex每一个都有自己的注意事项。
+     *                                  要真正掌握复杂应用下的服务端渲染，我们推荐深度熟悉以下资源：vue-server-renderer 文档:更多
+     *                                  细节在这里，和更多先进的主题一起的文档。 例如 preventing cross-request contamination
+     *                                  和 添加独立的服务构建vue-hackernews-2.0: 明确整合了 所有主要的Vue库和概念在单个应用中
+     *
+     *
+     * */
+//    var Vue=require('vue');
+//    var app=new Vue({
+//        render:function(h){
+//            return h('p','hello world')
+//        }
+//    });
+//    var renderer=require('vue-server-render').createRenderer();
+//    renderer.renderToString(app,function(error,html){
+//        if(error)throw error
+//        console.log(html)
+//    });
+</script>
+</html>

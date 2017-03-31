@@ -1,0 +1,138 @@
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+}
+.fade-enter, .fade-leave-active {
+    opacity: 0
+}
+
+
+
+/* 可以设置不同的进入和离开动画 */
+/* 设置持续时间和动画函数 */
+.slide-fade-enter-active{
+    transition:all .3s ease;
+}
+.slide-fade-leave-active{
+    transition:all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+.slide-fade-enter, .slide-fade-leave-active {
+    transform: translateX(10px);
+    opacity: 0;
+}
+
+/*css动画*/
+.bounce-enter-active{
+    animation:bounce-in .5s;
+}
+.bounce-leave-active{
+    animation:bounce-out .5s;
+}
+@keyframes bounce-in {
+    0%{
+        transform: scale(0);
+    }
+    50%{
+        transform: scale(1.5);
+    }
+    100%{
+        transform: scale(1);
+    }
+}
+@keyframes bounce-out {
+    0%{
+        transform: scale(1);
+    }
+    50%{
+        transform: scale(1.5);
+    }
+    100%{
+        transform: scale(0);
+    }
+}
+
+
+
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+.component-fade-enter, .component-fade-leave-active {
+    opacity: 0;
+}
+
+
+/*列表的进入和离开过渡*/
+.list-item{
+    transition: all 1s;
+    display: inline-block;
+    margin-right: 10px;
+}
+/*.list-enter-active,.list-leave-active{*/
+    /*transition:all 1s;*/
+/*}*/
+.list-enter,.list-leave-active{
+    opacity:0;
+    transform: translateY(100px) scale(10);
+}
+.list-leave-active {
+    position: absolute;
+}
+
+
+
+/*列表位移过渡*/
+.flip-list-move{
+    transition:transform 1s;/*使用 transforms 将元素从之前的位置平滑过渡新的位置。*/
+}
+
+
+
+
+
+.sudoku-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 238px;
+    margin-top: 10px;
+}
+.cell {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 25px;
+    height: 25px;
+    border: 1px solid #aaa;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+.cell:nth-child(3n) {
+    margin-right: 0;
+}
+.cell:nth-child(27n) {
+    margin-bottom: 0;
+}
+.cell-move {
+    transition: transform 1s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+</head>
+<body>
+
+</body>
+<script type="application/javascript">
+    /*
+    *   生产环境部署
+    *       删除警告：为了减少文件大小，Vue 精简独立版本已经删除了所有警告，但是当你使用 Webpack 或 Browserify 等工具时，你需要一些额外的配置实现这点。
+    *       1.Webpack:使用Webpack的 DefinePlugin 来指定生产环境，以便在压缩时可以让 UglifyJS 自动删除代码块内的警告语句。例如配置：
+    *           var webpack=require('webpack');
+    *           module.exports={
+    *               //...
+    *               plugins:[
+    *                   //...
+    *                   new webpack.DefinePlugin({
+    *                       'process.env':{
+    *                           NODE_ENV:'"production"'
+    *                       }
+    *                   }),
+    *                   new webpack.optimize.UglifyJsPlugin({
+    *                       compress:{
+    *                           warnings:false
+    *                       }
+    *                   })
+    *               ]
+    *           }
+    *
+    *        2.Browserify
+    *               .运行打包命令,设置NODE_ENV为"production".等于告诉vueify避免引入热重载和开发相关代码
+    *               .使用一个全局envify转换你的bundle文件。这可以精简掉包含在Vue源码中的所有环境变量条件相关代码块内的警告语句
+    *
+    *        3.跟踪运行时错误
+    *               如果在组件渲染时出现运行错误，错误将会被传递至全局Vue.config.errorHandler 配置函数（如果已设置）。
+    *               利用这个钩子函数和错误跟踪服务（如 Sentry，它为 Vue 提供官方集成），可能是个不错的主意。
+    *
+    *        4.提取CSS
+    *           使用单文件组件时，<style> 标签在开发运行过程中会被动态实时注入。在生产环境中，你可能需要从所有组件中提取样式到单独的 CSS 文件中。
+    *           有关如何实现的详细信息，请查阅 vue-loader 和 vueify 相应文档。vue-cli 已经配置好了官方的 webpack 模板。
+    *
+    * */
+</script>
+</html>

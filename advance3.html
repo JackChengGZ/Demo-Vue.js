@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+    <link href="https://unpkg.com/animate.css@3.5.1/animate.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/advance2.css"/>
+</head>
+<body>
+    <div id="animated-number-demo">
+        <input v-model.number="number" type="number" step="20"/>
+        <p>{{animatedNumber}}</p>
+    </div>
+    <div id="example-8">
+        <input type="number" v-model.number="firstNumber" step="20"/>+
+        <input type="number" v-model.number="secondNumber" step="20"/>=
+        {{result}}
+        <p>
+            <animated-integer v-bind:value="firstNumber"></animated-integer>+
+            <animated-integer v-bind:value="secondNumber"></animated-integer>=
+            <animated-integer v-bind:value="result"></animated-integer>
+        </p>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+<script src="https://unpkg.com/tween.js@16.3.4"></script>
+<script type="application/javascript">
+    /*
+    * 过渡状态：
+    *   Vue的过渡系统提供了非常多简单的方法设置进入、离开和列表的动效。那么对于数据元素本身的动效呢，比如：
+    *       数字和运算、颜色的显示、SVG节点的位置、元素大小和其他属性
+    *   所有的原始数字都事先存储起来，可以直接转换到数字。可以结合Vue的响应式和组件系统，使用第三方库来实现切换元素的过渡状态
+    *
+    *       1.状态动画与watcher:
+    *           通过watcher我们能监听到任何数值属性的数值更新。
+    *       2.动态状态装换：
+    *           就像Vue的过渡组件一样，数据背后状态转换会实时更新，这对于原型设计十分有作用。当你修改一些变量，即使是一个简单的SVG多边形也可实现很多难以想像的效果
+    *       3.通过组件组织过渡：
+        *       管理太多的状态转换的很快会接近到Vue实例或者组件的复杂性，幸好很多的动画可以提取到专用的子组件
+    *
+    *
+    * */
+//    状态动画与watcher——>watcher我们能监听到任何数值属性的数值更新
+    new Vue({
+        el:'#animated-number-demo',
+        data:{
+            number:0,
+            animatedNumber:0
+        },
+        watch:{
+            number:function(newValue,oldValue){
+                var vm=this;
+                function animate(time){
+                    requestAnimationFrame(animate);
+                    TWEEN.update(time);
+                };
+                new TWEEN.Tween({tweeningNumber:oldValue})
+                        .easing(TWEEN.Easing.Quadratic.Out)
+                        .to({tweeningNumber:newValue},500)
+                        .onUpdate(function(){
+                            vm.animatedNumber=this.tweeningNumber.toFixed(0);
+                        })
+                        .start();
+                animate();
+            }
+        }
+    });
+//    通过组件组织过渡
+    Vue.component('animated-integer',{
+        template:'<span>{{tweeningValue}}</span>',
+        props:{
+            value:{
+                type:Number,
+                required:true
+            }
+        },
+        data:function(){
+            return {tweeningValue:0}
+        },
+        watch:{
+            value:function(newValue,oldValue){
+                this.tween(oldValue,newValue);
+            }
+        },
+        mounted: function () {
+            this.tween(0, this.value)
+        },
+        methods:{
+            tween:function(startValue,endValue){
+                var vm=this;
+                function animate(time){
+                    requestAnimationFrame(animate);
+                    TWEEN.update(time);
+                };
+                new TWEEN.Tween({tweeningValue:startValue})
+                        .to({tweeningValue:endValue},500)
+                        .onUpdate(function(){
+                            vm.tweeningValue=this.tweeningValue.toFixed(0)
+                        })
+                        .start();
+                animate();
+            }
+        }
+    });
+    new Vue({
+        el:'#example-8',
+        data:{
+            firstNumber:20,
+            secondNumber:40
+        },
+        computed:{
+            result:function(){
+                return this.firstNumber+this.secondNumber;
+            }
+        }
+    })
+</script>
+</html>

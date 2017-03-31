@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+</head>
+<body>
+<div id="example">
+
+</div>
+</body>
+<script>
+    /*
+     构造器
+     */
+    var vm=new Vue({
+//        选项
+    })
+    //组件构造器：
+    var MyComponent=Vue.extend({
+//        扩展选项
+    })
+    // 所有的 `MyComponent` 实例都将以预定义的扩展选项被创建
+    var myComponentInstance=new MyComponent();
+
+
+    /*
+     属性与方法
+     */
+    var data={a:1};
+    var vm=new Vue({
+        data:data
+    })
+    console.log(vm.a===data.a);
+    vm.a=2;
+    console.log(data.a);
+
+//    除了 data 属性， Vue 实例暴露了一些有用的实例属性与方法。这些属性与方法都有前缀 $，以便与代理的 data 属性区分。例如：
+    var data={a:1}
+    var vm=new Vue({
+        el:"#example",
+        data:data
+    })
+    console.log(vm.$data===data);
+    console.log(vm.$el===document.getElementById("example"));
+    // $watch 是一个实例方法
+    vm.$watch("a",function(newVal,oldVal){
+        // 这个回调将在 `vm.a`  改变后调用
+//        注意，不要在实例属性或者回调函数中（如 vm.$watch('a', newVal => this.myMethod())）使用箭头函数。
+// 因为箭头函数绑定父上下文，所以 this 不会像预想的一样是 Vue 实例，而是 this.myMethod 未被定义。
+    })
+
+    /*
+     实例生命周期
+     每个 Vue 实例在被创建之前都要经过一系列的初始化过程。例如，实例需要配置数据观测(data observer)、编译模版、挂载实例到 DOM ，
+     然后在数据变化时更新 DOM 。在这个过程中，实例也会调用一些 生命周期钩子 ，这就给我们提供了执行自定义逻辑的机会。
+     例如，created 这个钩子在实例被创建之后被调用：
+    *
+    * 也有一些其它的钩子，在实例生命周期的不同阶段调用，如 mounted、 updated 、destroyed 。钩子的 this 指向调用它的 Vue 实例。
+    * 一些用户可能会问 Vue.js 是否有“控制器”的概念？答案是，没有。组件的自定义逻辑可以分布在这些钩子中。
+    * */
+    var vm=new Vue({
+        data:{a:1},
+        created:function(){
+            console.log("a is:"+this.a);
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script type="application/javascript" src="js/vue.js"></script>
+    <link href="https://unpkg.com/animate.css@3.5.1/animate.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/advance2.css"/>
+</head>
+<body>
+    <anchored-heading v-bind:level="1" id="demo">Hello world!</anchored-heading>
+<!--<script type="text/x-template" id="anchored-heading-template">-->
+        <!--<div>-->
+            <!--<h1 v-if="level === 1">-->
+                <!--<slot></slot>-->
+            <!--</h1>-->
+            <!--<h2 v-if="level === 2">-->
+                <!--<slot></slot>-->
+            <!--</h2>-->
+            <!--<h3 v-if="level === 3">-->
+                <!--<slot></slot>-->
+            <!--</h3>-->
+            <!--<h4 v-if="level === 4">-->
+                <!--<slot></slot>-->
+            <!--</h4>-->
+            <!--<h5 v-if="level === 5">-->
+                <!--<slot></slot>-->
+            <!--</h5>-->
+            <!--<h6 v-if="level === 6">-->
+                <!--<slot></slot>-->
+            <!--</h6>-->
+        <!--</div>-->
+<!--</script>-->
+    <!--的需要重复很多次的元素/组件，你可以使用工厂函数来实现。-->
+    <div-element v-bind:level="1" id="divExample"></div-element>
+    <div-element2 id="divExample2">this.$slots.default</div-element2>
+    <div-element3 id="divExample3" :text="msg"></div-element3>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
+<script src="https://unpkg.com/tween.js@16.3.4"></script>
+<script type="application/javascript">
+    /*
+    * Render函数
+    *       基础：Vue推荐在绝大多数情况下使用template来创建你的HTML。然而在一些场景中，你真的需要JavaScript的完全编程的能力，这就是render函数，它比template更接近编译器
+    *            当我们开始写一个通过 level prop 动态生成heading 标签的组件，使用 render 函数
+    *            HTML层定义组件接口：
+    *               <anchored-heading :level="1">Hello world!</anchored-heading>
+    *            js层定义：
+    *            Vue.component('anchored-heading',{
+    *                render:function(createElement){
+    *                    return createElement(
+    *                        'h'+this.level,//tag name 标签名称
+    *                        this.$slots.default//子组件中的阵列
+    *                    )
+    *                },
+    *                props:{
+    *                    level:{
+    *                        type:number,
+    *                        required:true
+    *                    }
+    *                }
+    *            })
+    *           或者使用另外一种方式：非简洁版，代码较多.
+    *
+    *        createElement参数：第二件你需要熟悉的是如何在createElement函数中生成模板。这里是createElement接受的参数：
+    *                          createElement(
+    *                               //第一个参数：{String|Object|Function}
+    *                               //一个HTML标签字符串，组件选项对象，或者一个返回值类型为String/Object的函数，必要参数
+    *                               'div',
+    *
+    *                               //第二个参数：{Object}
+    *                               //一个包含模板相关属性的数据对象
+    *                               //这样，你可以在template中使用这些属性，可选参数
+    *                               {
+    *                                   //(详情见下一章节)
+    *                               }
+    *
+    *                               //第三个参数：{String|Array}
+    *                               //子节点(VNodes),可以是一个字符串或者数组，可选参数
+    *                               [
+    *                                   createElement('h1','hello world'),
+    *                                   createElement(MyComponent,{
+    *                                       props:{
+    *                                           someProp:'foo'
+    *                                       }
+    *                                   }),
+    *                                   'bar'
+    *                               ]
+    *                          )
+    *                   1.深入data object参数：有一件事要注意：正如在模板语法中，v-bind:class和v-bind:style ，会被特别对待一样，在VNode数据对象中，下列属性名是级别最高的字段。
+    *                                        {
+    *                                           //和V-bind:class一样的API
+    *                                           'class':{
+    *                                               foo:true,
+    *                                               bar:false
+    *                                           },
+    *                                           //和v-bind:style一样的API
+    *                                           style:{
+    *                                               color:'red',
+    *                                               fontSize:'14px'
+    *                                           },
+    *                                           //正常的HTML特性
+    *                                           attrs:{
+    *                                               id:'foo'
+    *                                           },
+    *                                           //组件props
+    *                                           props:{
+    *                                               myProp:'bar'
+    *                                           },
+    *                                           //DOM属性
+    *                                           domProps:{
+    *                                               innerHTML:'baz'
+    *                                           }
+    *                                           //事件监听器基于‘on’
+    *                                           //所以不在支持如 v-on:keyup.enter 修饰器
+    *                                           //需要手动匹配 keyCode.
+    *                                           on:{
+    *                                               click:this.clickHandler
+    *                                           },
+    *                                           //仅对于组件，用于监听原生事件，而不是组件内部使用 vm.$emit 触发的事件。
+    *                                           nativeOn: {
+    *                                               click: this.nativeClickHandler
+    *                                               },
+    *                                           // 自定义指令. 注意事项：不能对绑定的旧值设值
+    *                                           // Vue 会为您持续追踪
+    *                                            directives: [
+    *                                                   {
+    *                                                        name: 'my-custom-directive',
+    *                                                        value: '2',
+    *                                                        expression: '1 + 1',
+    *                                                        arg: 'foo',
+    *                                                        modifiers: {
+    *                                                            bar: true
+    *                                                        }
+    *                                                   }
+    *                                            ],
+    *                                            // Scoped slots in the form of
+    *                                            // { name: props => VNode | Array<VNode> }
+    *                                            scopedSlots: {
+    *                                               default: props => h('span', props.text)
+    *                                               },
+    *                                            // 如果组件是其他组件的子组件，需为slot指定名称
+    *                                               slot: 'name-of-slot',
+    *                                            // 其他特殊顶层属性
+    *                                               key: 'myKey',
+    *                                               ref: 'myRef'
+    *                                        }
+    *                2.完整实例：略
+    *                3.约束：VNodes 必须唯一，组件树中的所有 VNodes 必须是唯一的。这意味着，下面的 render function 是无效的：
+    *                       render: function (createElement) {
+    *                                    var myParagraphVNode = createElement('p', 'hi')
+    *                                    return createElement('div', [
+    *                                    // 错误-重复的VNodes
+    *                                    myParagraphVNode, myParagraphVNode
+    *                                    ])
+    *                                    }
+    *                       如果你真的需要重复很多次的元素/组件，你可以使用工厂函数来实现。例如，下面这个例子 render 函数完美有效地渲染了 20 个重复的段落：
+    *                       render:function(createElement){
+    *                           return createElement('div',
+    *                               Array.apply(null,{length:20}).map(function(){
+    *                                   return createElement('p','hi');
+    *                               })
+    *                           )
+    *                       }
+    *
+    *        使用JavaScript代替模板功能：
+    *                   1.v-if和v-for:由于使用原生的JavaScript来实现某些东西很简单，Vue的render函数没有提供专用的API，比如,template中的v-if和v-for:
+    *                       <ul v-if="items.length">
+    *                           <li v-for="item in items">{{ item.name }}</li>
+    *                       </ul>
+    *                       <p v-else>No items found.</p>
+    *                       被 JavaScript 的 if/else 和 map 重写：
+    *                       render:function(createElement){
+    *                           if(this.items.length){
+    *                               return createElement('ul',this.items.map(function(item){
+    *                                       return createElement('li',item.name)
+    *                               }))
+    *                           }else{
+    *                               return createElement('p','Not Found');
+    *                           }
+    *                       }
+    *
+    *
+    *                   2.v-model:render函数中没有与v-model相应的api-你必须自己来实现相应的逻辑
+    *                       render:function(createElement){
+    *                               var self=this;
+    *                               return createElement('input',{
+    *                                   domProps:{
+    *                                       value:self.value
+    *                                   },
+    *                                   on:{
+    *                                       input:function(event){
+    *                                           self.value=event.target.value
+    *                                       }
+    *                                   }
+    *                               })
+    *                       }
+    *                       这就是深入底层要付出的,尽管麻烦了一些，但相对于 v-model来说，你可以更灵活地控制。
+    *
+    *
+    *                  3.事件&按键修饰符：对于.capture和.once事件修饰符，Vue提供了相应的前缀可以用于on:
+    *                       例如：
+    *                       on:{
+    *                           '!click':this.doThisInCapturingMode,
+    *                           '~keyup':this.doThisOnce,
+    *                           '~!mouseover':this.doThisOnceInCapturingMode
+    *                       }
+    *                       使用所有修饰符的例子:
+    *                       on:{
+    *                           keyup:function(event){
+    *                               // 如果触发事件的元素不是事件绑定的元素
+    *                               // 则返回
+    *                               if (event.target !== event.currentTarget) return
+    *                               // 如果按下去的不是enter键或者
+    *                               // 没有同时按下shift键
+    *                               // 则返回
+    *                               if (!event.shiftKey || event.keyCode !== 13) return
+    *                               // 阻止 事件冒泡
+    *                               event.stopPropagation()
+    *                               // 阻止该元素默认的keyup事件
+    *                               event.preventDefault()
+    *                               // ...
+    *                           }
+    *                       }
+    *                  4.slots:你可以从this.$slots获取VNodes列表中的静态内容:
+    *                       render:function(createElement){
+    *                              // <div><slot></slot></div>
+    *                             return createElement('div',this.$slots.default)
+    *                       }
+    *
+    *
+    *       JSX:如果你写了很多 render 函数，可能会觉得痛苦,特别是模板如此简单的情况下,这就是会有一个 Babel plugin 插件，
+    *           用于在 Vue 中使用 JSX 语法的原因，它可以让我们回到于更接近模板的语法上。
+    *
+    *
+    *       函数化组件：之前创建的锚点标题组件是比较简单，没有管理或者监听任何传递给他的状态，也没有生命周期方法。它只是一个接收参数的函数。
+    *               在这个例子中，我们标记组件为 functional， 这意味它是无状态（没有 data），无实例（没有 this 上下文）。一个 函数化组件 就像这样：
+    *               Vue.component('my-component',{
+    *                   functional:true,
+    *                   // 为了弥补缺少的实例
+    *                   // 提供第二个参数作为上下文
+    *                   render: function (createElement, context) {
+    *                       // ...
+    *                   },
+    *                   // Props 可选
+    *                   props: {
+    *                       // ...
+    *                   }
+    *               });
+    *               组件需要的一切都是通过上下文传递，包括：
+    *               props:提供props的对象
+    *               children:VNode子节点的数组
+    *               slots: slots 对象
+    *               data: 传递给组件的data对象
+    *               parent: 对父组件的引用
+    *               在添加 functional: true 之后，锚点标题组件的 render 函数之间简单更新增加 context 参数，this.$slots.default
+    *               更新为 context.children，之后this.level 更新为 context.props.level。
+    *               因为函数化组件只是一个函数，所以渲染开销也低很多。在作为包装组件时它们也同样非常有用，比如，当你需要做这些时：
+    *                   程序化地在多个组件中选择一个,
+    *                   在将 children, props, data 传递给子组件之前操作它们。
+    *
+    *            1.slots()和children对比
+    *               你可能想知道为什么同时需要 slots() 和 children。slots().default 不是和 children 类似的吗？在一些场景中，是这样，
+    *               但是如果是函数式组件和下面这样的 children
+    *               <my-functional-component>
+    *                    <p slot="foo">first</p>
+    *                    <p>second</p>
+    *               </my-functional-component>
+    *               对于这个组件，children 会给你两个段落标签，而 slots().default 只会传递第二个匿名段落标签，slots().foo 会传递第一个具名段落标签。
+    *               同时拥有 children 和 slots() ，因此你可以选择让组件通过 slot() 系统分发或者简单的通过 children 接收，让其他组件去处理。
+    *
+    *      模板编译：Vue 的模板实际是编译成了 render 函数。这是一个实现细节，通常不需要关心，但如果你想看看模板的功能是怎样被编译的，你会发现会非常有趣。
+    *              下面是一个使用 Vue.compile 来实时编译模板字符串的简单 demo：
+    *              <div>
+    *                  <h1>I'm a template!</h1>
+    *                  <p v-if="message">
+    *                      {{ message }}
+    *                  </p>
+    *                  <p v-else>
+    *                      No message.
+    *                  </p>
+    *              </div>
+    *              function(){
+    *                   with(this){return _h('div',[_h('h1',["I'm a template!"]),(message)?_h('p',[_s(message)]):_h('p',["No Message."])])}
+    *              }
+    *
+    *
+    *
+    * */
+//    //通过 level prop 动态生成heading 标签的组件,但是并不简洁
+//    Vue.component('anchored-heading', {
+//        template: '#anchored-heading-template',
+//        props: {
+//            level: {
+//                type: Number,
+//                required: true
+//            }
+//        }
+//    });
+//    new Vue({
+//        el:'#demo'
+//    });
+//    使用 render 函数创建你的HTML
+    Vue.component('anchored-heading', {
+        render: function (createElement) {
+            return createElement(
+                    'h' + this.level,   // tag name 标签名称
+                    this.$slots.default// 子组件中的阵列,你需要知道当你不使用 slot 属性向组件中传递内容时，
+                    // 比如 anchored-heading 中的 Hello world!,这些子元素被存储在组件实例中的$slots.default中。
+//                    console.log(this.$slots.default)
+            )
+        },
+        props: {
+            level: {
+                type: Number,
+                required: true
+            }
+        }
+    });
+    new Vue({
+        el:'#demo'
+    });
+//    约束：如果你真的需要重复很多次的元素/组件，你可以使用工厂函数来实现。
+    Vue.component('div-element',{
+        render: function (createElement) {
+            return createElement('div',
+                    Array.apply(null, {length: 5}).map(function () {
+                        return createElement('p','用于数据显示：如果你真的需要重复很多次的元素/组件，你可以使用工厂函数来实现')
+                    })
+            )
+        },
+        props:{
+//            level:{
+//                type:null,
+//                required:true
+//            }
+        }
+    });
+    new Vue({
+        el:'#divExample'
+//        data:{
+//            text:'的需要重复很多次的元素/组件，你可以使用工厂函数来实现。'
+//        }
+    });
+    //slots:你可以从this.$slots获取VNodes列表中的静态内容:
+    Vue.component('div-element2',{
+        render:function(createElement){
+            return createElement('div',this.$slots.default);
+        }
+    });
+    new Vue({
+        el:'#divExample2'
+    });
+    // from this.$scopedSlots:
+//    Vue.component('div-element3',{
+//        render:function(createElement){
+//            return createElement('div',[this.$scopedSlots.default({text:this.msg})])
+//        }
+//    });
+//    new Vue({
+//        el:'#divExample3',
+//    })
+</script>
+</html>
